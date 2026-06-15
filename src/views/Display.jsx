@@ -57,15 +57,14 @@ export default function Display() {
       {/* Logo */}
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
         <img
-          src="/logo_definitivo.png"
+          src="/logo_transparent.png"
           alt="Ambulatorio Millefonti"
           style={{
             width: 280,
             height: 280,
             objectFit: 'contain',
             animation: 'fadeIn 1.5s ease-in-out',
-            filter: 'drop-shadow(0 4px 16px rgba(45,125,111,0.15))',
-            mixBlendMode: 'multiply'
+            filter: 'drop-shadow(0 4px 16px rgba(45,125,111,0.15))'
           }}
         />
       </div>
