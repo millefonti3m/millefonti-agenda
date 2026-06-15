@@ -101,7 +101,7 @@ export default function Infermeria() {
       padding: 32
     }}>
       <div style={{ marginBottom: 48, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <img src="/logo_transparent.png" alt="Ambulatorio Millefonti" style={{ height: 48, objectFit: 'contain' }} />
+        <img src="/logo_transparent.png" alt="Ambulatorio Millefonti" style={{ height: 100, objectFit: 'contain' }} />
         <span style={{ color: VERDE, fontSize: 20, fontWeight: 700 }}>Infermeria</span>
       </div>
 

@@ -142,7 +142,7 @@ export default function Segreteria() {
         marginBottom: 24
       }}>
         <div>
-          <img src="/logo_transparent.png" alt="Ambulatorio Millefonti" style={{ height: 48, objectFit: 'contain' }} />
+          <img src="/logo_transparent.png" alt="Ambulatorio Millefonti" style={{ height: 100, objectFit: 'contain' }} />
           <div style={{ color: '#333', fontSize: 22, fontWeight: 700 }}>
             Segreteria
           </div>
