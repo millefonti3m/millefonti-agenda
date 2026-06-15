@@ -97,6 +97,18 @@ export default function Segreteria() {
     setPrelNuovo(false)
   }
 
+  const svuotaLista = async () => {
+    if (!sessione) return
+    const conferma = window.confirm(
+      'Sei sicuro di voler eliminare tutti i pazienti di oggi?'
+    )
+    if (!conferma) return
+    await supabase
+      .from('pazienti_attesa')
+      .delete()
+      .eq('sessione_id', sessione.id)
+  }
+
   const importaExcel = async (e) => {
     const file = e.target.files[0]
     if (!file || !sessione) return
@@ -231,6 +243,21 @@ export default function Segreteria() {
           📄 PDF
           <input type="file" accept=".pdf" onChange={importaPDF} style={{ display: 'none' }} />
         </label>
+        <button
+          onClick={svuotaLista}
+          style={{
+            background: '#fee2e2',
+            color: '#dc2626',
+            border: '1px solid #dc2626',
+            borderRadius: 10,
+            padding: '10px 20px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            fontSize: 14
+          }}
+        >
+          🗑 Svuota lista
+        </button>
       </div>
 
       <GestioneDocumenti onDocumentoSelezionato={setDocumentoAttivo} />
