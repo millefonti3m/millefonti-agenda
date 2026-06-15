@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 
+const VERDE_SCURO = '#255736'
+const VERDE_MEDIO = '#2d7d6f'
+const TEAL = '#437953'
+const FONT_TITOLO = "'Playfair Display', Georgia, serif"
+const FONT_BODY = "'Plus Jakarta Sans', Arial, sans-serif"
+
 export default function Display() {
   const [chiamata, setChiamata] = useState(null)
   const [storico, setStorico] = useState([])
 
-  // Carica ultima chiamata
   const caricaUltima = async () => {
     const { data } = await supabase
       .from('chiamate_display')
@@ -18,7 +23,6 @@ export default function Display() {
     }
   }
 
-  // Realtime
   useEffect(() => {
     caricaUltima()
     const sub = supabase
@@ -30,7 +34,6 @@ export default function Display() {
       }, (payload) => {
         setChiamata(payload.new)
         setStorico(prev => [payload.new, ...prev].slice(0, 3))
-        // Voce italiana
         const utterance = new SpeechSynthesisUtterance(payload.new.testo_voce)
         utterance.lang = 'it-IT'
         utterance.rate = 0.9
@@ -42,41 +45,77 @@ export default function Display() {
 
   return (
     <div style={{
-      background: '#0a0a0a',
+      background: '#ffffff',
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: FONT_BODY,
       padding: 40
     }}>
       {/* Logo */}
-      <div style={{ color: '#2d7d6f', fontSize: 18, fontWeight: 700, marginBottom: 60, letterSpacing: 2 }}>
+      <div style={{
+        color: VERDE_SCURO,
+        fontSize: 22,
+        fontWeight: 900,
+        fontFamily: FONT_TITOLO,
+        letterSpacing: 3,
+        marginBottom: 16
+      }}>
         AMBULATORIO MILLEFONTI
       </div>
 
+      {/* Linea separatrice */}
+      <div style={{
+        width: 120,
+        height: 3,
+        background: VERDE_MEDIO,
+        borderRadius: 2,
+        marginBottom: 64
+      }} />
+
       {/* Chiamata principale */}
       {chiamata ? (
-        <div style={{ textAlign: 'center', marginBottom: 60 }}>
-          <div style={{ color: '#888', fontSize: 22, marginBottom: 16 }}>
-            NUMERO
+        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+          <div style={{
+            color: '#aaa',
+            fontSize: 18,
+            fontFamily: FONT_BODY,
+            fontWeight: 600,
+            letterSpacing: 4,
+            textTransform: 'uppercase',
+            marginBottom: 16
+          }}>
+            Numero
           </div>
           <div style={{
-            color: '#ffffff',
-            fontSize: 160,
+            color: VERDE_SCURO,
+            fontSize: 180,
             fontWeight: 900,
+            fontFamily: FONT_TITOLO,
             lineHeight: 1,
-            marginBottom: 24
+            marginBottom: 28
           }}>
             {chiamata.numero_paziente}
           </div>
-          <div style={{ color: '#888', fontSize: 28, marginBottom: 12 }}>
+          <div style={{
+            color: VERDE_MEDIO,
+            fontSize: 30,
+            fontFamily: FONT_BODY,
+            fontWeight: 600,
+            letterSpacing: 1
+          }}>
             {chiamata.destinazione}
           </div>
         </div>
       ) : (
-        <div style={{ color: '#333', fontSize: 32 }}>
+        <div style={{
+          color: '#888',
+          fontSize: 28,
+          fontFamily: FONT_BODY,
+          marginBottom: 64
+        }}>
           In attesa di chiamate...
         </div>
       )}
@@ -87,15 +126,18 @@ export default function Display() {
           position: 'fixed',
           bottom: 40,
           display: 'flex',
-          gap: 24
+          gap: 20
         }}>
-          {storico.map((s, i) => (
+          {storico.map((s) => (
             <div key={s.id} style={{
-              background: '#1a1a1a',
+              background: '#f0f5f0',
+              border: `1px solid ${VERDE_MEDIO}`,
               borderRadius: 12,
-              padding: '12px 24px',
-              color: '#555',
-              fontSize: 18
+              padding: '12px 28px',
+              color: TEAL,
+              fontSize: 17,
+              fontFamily: FONT_BODY,
+              fontWeight: 600
             }}>
               N° {s.numero_paziente} → {s.destinazione}
             </div>
