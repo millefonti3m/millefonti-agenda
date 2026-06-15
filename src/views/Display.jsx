@@ -60,11 +60,12 @@ export default function Display() {
           src="/logo_definitivo.png"
           alt="Ambulatorio Millefonti"
           style={{
-            width: 180,
-            height: 180,
+            width: 280,
+            height: 280,
             objectFit: 'contain',
             animation: 'fadeIn 1.5s ease-in-out',
-            filter: 'drop-shadow(0 4px 16px rgba(45,125,111,0.15))'
+            filter: 'drop-shadow(0 4px 16px rgba(45,125,111,0.15))',
+            mixBlendMode: 'multiply'
           }}
         />
       </div>
