@@ -55,15 +55,18 @@ export default function Display() {
       padding: 40
     }}>
       {/* Logo */}
-      <div style={{
-        color: VERDE_SCURO,
-        fontSize: 22,
-        fontWeight: 900,
-        fontFamily: FONT_TITOLO,
-        letterSpacing: 3,
-        marginBottom: 16
-      }}>
-        AMBULATORIO MILLEFONTI
+      <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <img
+          src="/logo_definitivo.png"
+          alt="Ambulatorio Millefonti"
+          style={{
+            width: 180,
+            height: 180,
+            objectFit: 'contain',
+            animation: 'fadeIn 1.5s ease-in-out',
+            filter: 'drop-shadow(0 4px 16px rgba(45,125,111,0.15))'
+          }}
+        />
       </div>
 
       {/* Linea separatrice */}
@@ -95,7 +98,8 @@ export default function Display() {
             fontWeight: 900,
             fontFamily: FONT_TITOLO,
             lineHeight: 1,
-            marginBottom: 28
+            marginBottom: 28,
+            animation: 'slideUp 0.5s ease-out'
           }}>
             {chiamata.numero_paziente}
           </div>
