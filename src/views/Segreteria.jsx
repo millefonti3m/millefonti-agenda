@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import * as XLSX from 'xlsx'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import * as pdfjsLib from 'pdfjs-dist'
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
 
 const VERDE = '#2d7d6f'
 const SFONDO = '#f0f4f8'
@@ -22,18 +27,19 @@ export default function Segreteria() {
   const [ecgNuovo, setEcgNuovo] = useState(false)
   const [prelNuovo, setPrelNuovo] = useState(false)
   const [contatore, setContatore] = useState(1)
+  const [dataSelezionata, setDataSelezionata] = useState(new Date())
 
   const getOCreaSessione = async () => {
-    const oggi = new Date().toISOString().split('T')[0]
+    const dataStr = dataSelezionata.toISOString().split('T')[0]
     let { data } = await supabase
       .from('sessioni_attesa')
       .select('id')
-      .eq('data', oggi)
+      .eq('data', dataStr)
       .single()
     if (!data) {
       const { data: nuova } = await supabase
         .from('sessioni_attesa')
-        .insert({ data: oggi })
+        .insert({ data: dataStr })
         .select()
         .single()
       data = nuova
@@ -110,9 +116,46 @@ export default function Segreteria() {
     }
   }
 
+  const importaPDF = async (e) => {
+    const file = e.target.files[0]
+    if (!file || !sessione) return
+    const buffer = await file.arrayBuffer()
+    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
+    const tuttiRighe = []
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i)
+      const content = await page.getTextContent()
+      const testo = content.items.map(item => item.str).join(' ')
+      tuttiRighe.push(testo)
+    }
+    const righe = tuttiRighe.join('\n').split('\n')
+    const records = righe
+      .map(r => r.trim())
+      .filter(r => r.length > 3)
+      .map(r => {
+        const orarioMatch = r.match(/\b(\d{1,2}[:.]\d{2})\b/)
+        const ecg = /ecg/i.test(r)
+        const prelievo = /prelievo|esame/i.test(r)
+        const nome = r.replace(/\d{1,2}[:.]\d{2}/, '').replace(/ecg|prelievo|esame/gi, '').trim()
+        return {
+          sessione_id: sessione.id,
+          nome: nome || r,
+          orario_appuntamento: orarioMatch ? orarioMatch[1].replace('.', ':') : null,
+          necessita_ecg: ecg,
+          necessita_prelievo: prelievo,
+          stato: 'non_arrivato',
+          arrivato: false
+        }
+      })
+      .filter(r => r.nome && r.nome.length > 2)
+    if (records.length) {
+      await supabase.from('pazienti_attesa').insert(records)
+    }
+  }
+
   useEffect(() => {
     getOCreaSessione().then(sess => caricaPazienti(sess))
-  }, [])
+  }, [dataSelezionata])
 
   useEffect(() => {
     if (!sessione) return
@@ -147,25 +190,45 @@ export default function Segreteria() {
             Segreteria
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <label style={{
-            background: VERDE,
-            color: 'white',
-            borderRadius: 10,
-            padding: '10px 20px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            fontSize: 14
-          }}>
-            📂 Importa Excel
-            <input
-              type="file"
-              accept=".xlsx,.xls,.csv"
-              onChange={importaExcel}
-              style={{ display: 'none' }}
-            />
-          </label>
+      </div>
+
+      {/* Pannello data + importa */}
+      <div style={{
+        background: 'white',
+        borderRadius: 14,
+        padding: '16px 20px',
+        marginBottom: 20,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 16,
+        flexWrap: 'wrap'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ color: VERDE, fontWeight: 700, fontSize: 14 }}>📅 Data lista:</span>
+          <DatePicker
+            selected={dataSelezionata}
+            onChange={date => setDataSelezionata(date)}
+            dateFormat="dd/MM/yyyy"
+            style={{ fontSize: 14 }}
+          />
         </div>
+        <label style={{
+          background: VERDE, color: 'white',
+          borderRadius: 10, padding: '10px 20px',
+          fontWeight: 700, cursor: 'pointer', fontSize: 14
+        }}>
+          📂 Excel
+          <input type="file" accept=".xlsx,.xls,.csv" onChange={importaExcel} style={{ display: 'none' }} />
+        </label>
+        <label style={{
+          background: '#2d7d6f', color: 'white',
+          borderRadius: 10, padding: '10px 20px',
+          fontWeight: 700, cursor: 'pointer', fontSize: 14
+        }}>
+          📄 PDF
+          <input type="file" accept=".pdf" onChange={importaPDF} style={{ display: 'none' }} />
+        </label>
       </div>
 
       {/* Aggiungi manuale */}
