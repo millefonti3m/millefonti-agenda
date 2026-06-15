@@ -100,8 +100,9 @@ export default function Infermeria() {
       fontFamily: 'Arial, sans-serif',
       padding: 32
     }}>
-      <div style={{ color: VERDE, fontSize: 20, fontWeight: 700, marginBottom: 48 }}>
-        🏥 Infermeria — Ambulatorio Millefonti
+      <div style={{ marginBottom: 48, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <img src="/logo_transparent.png" alt="Ambulatorio Millefonti" style={{ height: 48, objectFit: 'contain' }} />
+        <span style={{ color: VERDE, fontSize: 20, fontWeight: 700 }}>Infermeria</span>
       </div>
 
       {/* Paziente attuale */}

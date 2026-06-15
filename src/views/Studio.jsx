@@ -143,9 +143,7 @@ export default function Studio() {
       justifyContent: 'center',
       fontFamily: 'Arial, sans-serif'
     }}>
-      <div style={{ color: VERDE, fontSize: 20, fontWeight: 700, marginBottom: 8 }}>
-        Ambulatorio Millefonti
-      </div>
+      <img src="/logo_transparent.png" alt="Ambulatorio Millefonti" style={{ height: 48, objectFit: 'contain', marginBottom: 8 }} />
       <div style={{ color: '#333', fontSize: 28, fontWeight: 700, marginBottom: 32 }}>
         Studio {numero}
       </div>
@@ -208,9 +206,7 @@ export default function Studio() {
         marginBottom: 24
       }}>
         <div>
-          <div style={{ color: VERDE, fontSize: 14, fontWeight: 700 }}>
-            Ambulatorio Millefonti — Studio {numero}
-          </div>
+          <img src="/logo_transparent.png" alt="Ambulatorio Millefonti" style={{ height: 36, objectFit: 'contain' }} />
           <div style={{ color: '#333', fontSize: 20, fontWeight: 700 }}>
             Dott. {nomeMedico}
           </div>
