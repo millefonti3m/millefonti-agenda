@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Login from './views/Login'
 import Segreteria from './views/Segreteria'
 import Infermeria from './views/Infermeria'
 import Studio from './views/Studio'
@@ -8,7 +9,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/segreteria" />} />
+        <Route path="/" element={<Login />} />
         <Route path="/segreteria" element={<Segreteria />} />
         <Route path="/infermeria" element={<Infermeria />} />
         <Route path="/studio/:numero" element={<Studio />} />
