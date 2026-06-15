@@ -22,6 +22,8 @@ export default function Login() {
   const verifica = () => {
     if (pwd === PASSWORD) {
       setAutenticato(true)
+      const oggi = new Date().toISOString().split('T')[0]
+      localStorage.setItem('agenda_auth', oggi)
       setErrore(false)
     } else {
       setErrore(true)

@@ -9,9 +9,9 @@ export default function Infermeria() {
   const [loading, setLoading] = useState(false)
 
   const [autenticato, setAutenticato] = useState(() => {
-    const saved = localStorage.getItem('infermeria_auth')
     const oggi = new Date().toISOString().split('T')[0]
-    return saved === oggi
+    return localStorage.getItem('agenda_auth') === oggi ||
+           localStorage.getItem('infermeria_auth') === oggi
   })
   const [pwd, setPwd] = useState('')
   const [errore, setErrore] = useState(false)
