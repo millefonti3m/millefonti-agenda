@@ -8,6 +8,91 @@ export default function Infermeria() {
   const [pazienteAttuale, setPazienteAttuale] = useState(null)
   const [loading, setLoading] = useState(false)
 
+  const [autenticato, setAutenticato] = useState(() => {
+    const saved = localStorage.getItem('infermeria_auth')
+    const oggi = new Date().toISOString().split('T')[0]
+    return saved === oggi
+  })
+  const [pwd, setPwd] = useState('')
+  const [errore, setErrore] = useState(false)
+
+  const verifica = () => {
+    if (pwd === 'Millefonti47!') {
+      const oggi = new Date().toISOString().split('T')[0]
+      localStorage.setItem('infermeria_auth', oggi)
+      setAutenticato(true)
+    } else {
+      setErrore(true)
+    }
+  }
+
+  if (!autenticato) return (
+    <div style={{
+      minHeight: '100vh',
+      background: '#f0f5f0',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'Arial, sans-serif'
+    }}>
+      <img src="/logo_transparent.png" alt="logo"
+        style={{ height: 120, marginBottom: 32 }} />
+      <div style={{
+        background: 'white',
+        borderRadius: 20,
+        padding: 40,
+        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+        minWidth: 300,
+        textAlign: 'center'
+      }}>
+        <div style={{ color: '#255736', fontSize: 18, fontWeight: 700, marginBottom: 20 }}>
+          Infermeria — Accesso
+        </div>
+        <input
+          type="password"
+          value={pwd}
+          onChange={e => setPwd(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && verifica()}
+          placeholder="Password"
+          style={{
+            width: '100%',
+            padding: '12px 16px',
+            borderRadius: 10,
+            border: errore ? '2px solid #dc2626' : '1px solid #dde5f0',
+            fontSize: 16,
+            marginBottom: 8,
+            boxSizing: 'border-box',
+            textAlign: 'center',
+            letterSpacing: 4
+          }}
+        />
+        {errore && (
+          <div style={{ color: '#dc2626', fontSize: 13, marginBottom: 8 }}>
+            Password non corretta
+          </div>
+        )}
+        <button
+          onClick={verifica}
+          style={{
+            width: '100%',
+            background: '#255736',
+            color: 'white',
+            border: 'none',
+            borderRadius: 10,
+            padding: '14px',
+            fontSize: 16,
+            fontWeight: 700,
+            cursor: 'pointer',
+            marginTop: 8
+          }}
+        >
+          Accedi →
+        </button>
+      </div>
+    </div>
+  )
+
   const caricaPazienteAttuale = async () => {
     const oggi = new Date().toISOString().split('T')[0]
     const { data: sessione } = await supabase
