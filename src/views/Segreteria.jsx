@@ -361,6 +361,22 @@ export default function Segreteria() {
                   ✓ Arrivato
                 </button>
               )}
+              <button
+                onClick={() => window.open(`/firma?id=${p.id}`, '_blank')}
+                style={{
+                  background: '#2d7d6f',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '8px 16px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  fontSize: 13,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                ✍️ Firma
+              </button>
               {completato && (
                 <div style={{
                   color: VERDE,
