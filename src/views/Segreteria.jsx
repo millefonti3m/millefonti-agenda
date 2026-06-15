@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import * as XLSX from 'xlsx'
+import GestioneDocumenti from '../components/GestioneDocumenti'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import * as pdfjsLib from 'pdfjs-dist'
@@ -28,6 +29,7 @@ export default function Segreteria() {
   const [prelNuovo, setPrelNuovo] = useState(false)
   const [contatore, setContatore] = useState(1)
   const [dataSelezionata, setDataSelezionata] = useState(new Date())
+  const [documentoAttivo, setDocumentoAttivo] = useState(null)
 
   const getOCreaSessione = async () => {
     const dataStr = dataSelezionata.toISOString().split('T')[0]
@@ -231,6 +233,8 @@ export default function Segreteria() {
         </label>
       </div>
 
+      <GestioneDocumenti onDocumentoSelezionato={setDocumentoAttivo} />
+
       {/* Aggiungi manuale */}
       <div style={{
         background: 'white',
@@ -362,7 +366,7 @@ export default function Segreteria() {
                 </button>
               )}
               <button
-                onClick={() => window.open(`/firma?id=${p.id}`, '_blank')}
+                onClick={() => window.open(`/firma?id=${p.id}&doc=${documentoAttivo?.id || ''}`, '_blank')}
                 style={{
                   background: '#2d7d6f',
                   color: 'white',
