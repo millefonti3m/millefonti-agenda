@@ -12,6 +12,20 @@ export default function Studio() {
   const [pazienti, setPazienti] = useState([])
   const [loading, setLoading] = useState(false)
   const [sessione, setSessione] = useState(null)
+  const [testoAnnuncio, setTestoAnnuncio] = useState('')
+  const [inviandoAnnuncio, setInviandoAnnuncio] = useState(false)
+
+  const inviaAnnuncio = async () => {
+    if (!testoAnnuncio.trim()) return
+    setInviandoAnnuncio(true)
+    await supabase.from('chiamate_display').insert({
+      numero_paziente: 0,
+      destinazione: `Studio ${numero}`,
+      testo_voce: testoAnnuncio.trim()
+    })
+    setTestoAnnuncio('')
+    setInviandoAnnuncio(false)
+  }
 
   const getSessione = async () => {
     const oggi = new Date().toISOString().split('T')[0]
@@ -297,6 +311,54 @@ export default function Studio() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div style={{
+        background: 'white',
+        borderRadius: 14,
+        padding: 16,
+        marginTop: 20,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+        border: '1px solid #e2e8f0'
+      }}>
+        <div style={{
+          color: VERDE, fontWeight: 700,
+          fontSize: 14, marginBottom: 10
+        }}>
+          📢 Annuncio in sala d'attesa
+        </div>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <input
+            value={testoAnnuncio}
+            onChange={e => setTestoAnnuncio(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && inviaAnnuncio()}
+            placeholder="Es. Studio 1 — portare il tesserino sanitario"
+            style={{
+              flex: 1,
+              padding: '10px 14px',
+              borderRadius: 8,
+              border: '1px solid #dde5f0',
+              fontSize: 14
+            }}
+          />
+          <button
+            onClick={inviaAnnuncio}
+            disabled={inviandoAnnuncio || !testoAnnuncio.trim()}
+            style={{
+              background: inviandoAnnuncio ? '#ccc' : VERDE,
+              color: 'white',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 20px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              fontSize: 14,
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {inviandoAnnuncio ? '⏳' : '📢 Annuncia'}
+          </button>
+        </div>
       </div>
     </div>
   )

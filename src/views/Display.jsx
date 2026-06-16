@@ -81,37 +81,54 @@ export default function Display() {
       {/* Chiamata principale */}
       {chiamata ? (
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <div style={{
-            color: '#aaa',
-            fontSize: 18,
-            fontFamily: FONT_BODY,
-            fontWeight: 600,
-            letterSpacing: 4,
-            textTransform: 'uppercase',
-            marginBottom: 16
-          }}>
-            Numero
-          </div>
-          <div style={{
-            color: VERDE_SCURO,
-            fontSize: 180,
-            fontWeight: 900,
-            fontFamily: FONT_TITOLO,
-            lineHeight: 1,
-            marginBottom: 28,
-            animation: 'slideUp 0.5s ease-out'
-          }}>
-            {chiamata.numero_paziente}
-          </div>
-          <div style={{
-            color: VERDE_MEDIO,
-            fontSize: 30,
-            fontFamily: FONT_BODY,
-            fontWeight: 600,
-            letterSpacing: 1
-          }}>
-            {chiamata.destinazione}
-          </div>
+          {chiamata.numero_paziente === 0 ? (
+            <div style={{
+              color: VERDE_SCURO,
+              fontSize: 48,
+              fontWeight: 700,
+              fontFamily: FONT_TITOLO,
+              lineHeight: 1.3,
+              marginBottom: 28,
+              maxWidth: 700,
+              animation: 'slideUp 0.5s ease-out'
+            }}>
+              📢 {chiamata.testo_voce}
+            </div>
+          ) : (
+            <>
+              <div style={{
+                color: '#aaa',
+                fontSize: 18,
+                fontFamily: FONT_BODY,
+                fontWeight: 600,
+                letterSpacing: 4,
+                textTransform: 'uppercase',
+                marginBottom: 16
+              }}>
+                Numero
+              </div>
+              <div style={{
+                color: VERDE_SCURO,
+                fontSize: 180,
+                fontWeight: 900,
+                fontFamily: FONT_TITOLO,
+                lineHeight: 1,
+                marginBottom: 28,
+                animation: 'slideUp 0.5s ease-out'
+              }}>
+                {chiamata.numero_paziente}
+              </div>
+              <div style={{
+                color: VERDE_MEDIO,
+                fontSize: 30,
+                fontFamily: FONT_BODY,
+                fontWeight: 600,
+                letterSpacing: 1
+              }}>
+                {chiamata.destinazione}
+              </div>
+            </>
+          )}
         </div>
       ) : (
         <div style={{
@@ -143,7 +160,7 @@ export default function Display() {
               fontFamily: FONT_BODY,
               fontWeight: 600
             }}>
-              N° {s.numero_paziente} → {s.destinazione}
+              {s.numero_paziente === 0 ? `📢 ${s.testo_voce}` : `N° ${s.numero_paziente} → ${s.destinazione}`}
             </div>
           ))}
         </div>
