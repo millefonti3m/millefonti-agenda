@@ -174,8 +174,19 @@ export default function Segreteria() {
     const parseOra = (val) => {
       if (!val) return null
       const s = String(val).trim()
-      const match = s.match(/(\d{1,2})[:.:](\d{2})/)
-      if (match) return `${match[1].padStart(2,'0')}:${match[2]}`
+
+      // Stringa tipo "08:30nm" o "08:30" o "08:30:00"
+      const match = s.match(/(\d{1,2})[:.]\s*(\d{2})/)
+      if (match) {
+        const h = parseInt(match[1])
+        const m = parseInt(match[2])
+        // scarta valori impossibili come 00:33 che sono decimali mal parsati
+        if (h >= 1 || m === 0) {
+          return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
+        }
+      }
+
+      // Numero decimale Excel (frazione di giorno)
       const n = parseFloat(val)
       if (!isNaN(n) && n > 0 && n < 1) {
         const totalMin = Math.round(n * 24 * 60)
@@ -183,6 +194,7 @@ export default function Segreteria() {
         const m = totalMin % 60
         return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
       }
+
       return null
     }
 
