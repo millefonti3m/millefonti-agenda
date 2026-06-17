@@ -26,7 +26,13 @@ export default function GestioneDocumenti({ onDocumentoSelezionato }) {
     const file = e.target.files[0]
     if (!file) return
     setCaricando(true)
-    const fileName = `${Date.now()}_${file.name}`
+    const sanitize = (name) => name
+      .normalize('NFKD')
+      .replace(/[̀-ͯ؀-ۿ​-‍﻿]/g, '')
+      .replace(/[^a-zA-Z0-9._\-]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '')
+    const fileName = `${Date.now()}_${sanitize(file.name)}`
     const { error } = await supabase.storage
       .from('documenti-firma')
       .upload(fileName, file)
