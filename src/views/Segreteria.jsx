@@ -112,22 +112,127 @@ export default function Segreteria() {
   const importaExcel = async (e) => {
     const file = e.target.files[0]
     if (!file || !sessione) return
+
     const buffer = await file.arrayBuffer()
-    const wb = XLSX.read(buffer)
-    const ws = wb.Sheets[wb.SheetNames[0]]
-    const rows = XLSX.utils.sheet_to_json(ws)
-    const records = rows.map(r => ({
-      sessione_id: sessione.id,
-      nome: r['Nome'] || r['nome'] || r['NOME'] || '',
-      orario_appuntamento: r['Orario'] || r['orario'] || null,
-      necessita_ecg: !!(r['ECG'] || r['ecg']),
-      necessita_prelievo: !!(r['Prelievo'] || r['prelievo']),
-      stato: 'non_arrivato',
-      arrivato: false
-    })).filter(r => r.nome)
-    if (records.length) {
-      await supabase.from('pazienti_attesa').insert(records)
+    const wb = XLSX.read(buffer, { type: 'array' })
+
+    // Se più fogli, chiedi quale usare
+    let sheetName = wb.SheetNames[0]
+    if (wb.SheetNames.length > 1) {
+      const scelta = window.prompt(
+        'Fogli disponibili:\n' +
+        wb.SheetNames.map((n, i) => `${i+1}. ${n}`).join('\n') +
+        '\n\nInserisci il numero del foglio da importare:',
+        '1'
+      )
+      const idx = parseInt(scelta) - 1
+      if (!isNaN(idx) && wb.SheetNames[idx]) {
+        sheetName = wb.SheetNames[idx]
+      }
     }
+
+    const ws = wb.Sheets[sheetName]
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' })
+
+    // Trova riga header
+    let headerIdx = -1
+    let headerRow = []
+    for (let i = 0; i < Math.min(rows.length, 10); i++) {
+      const r = rows[i].map(c => String(c).toUpperCase().trim())
+      if (r.includes('NOMINATIVO') || r.includes('AZIENDA')) {
+        headerIdx = i
+        headerRow = r
+        break
+      }
+    }
+    if (headerIdx === -1) { alert('Intestazione non trovata nel foglio'); return }
+
+    const col = (name) => {
+      const idx = headerRow.findIndex(h => h.includes(name))
+      return idx >= 0 ? idx : -1
+    }
+
+    // Indici colonne
+    const iOra = col('ORA')
+    const iAzienda = col('AZIENDA')
+    const iNominativo = col('NOMINATIVO')
+    const iSesso = col('S')
+    const iCF = col('CF')
+    const iMansione = col('MANSIONE')
+    const iVisita = col('VISITA')
+    const iAudio = col('AUDIO')
+    const iSpiro = col('SPIRO')
+    const iEcg = col('ECG')
+    const iEsami = col('ESAMI')
+    const iVesti = col('VESTI')
+    const iErg = col('ERG')
+    const iEtil = col('ETIL')
+    const iTd = col('TD')
+    const iVarie = col('VARIE')
+
+    const parseOra = (val) => {
+      if (!val) return null
+      const s = String(val).trim()
+      const match = s.match(/(\d{1,2})[:.:](\d{2})/)
+      if (match) return `${match[1].padStart(2,'0')}:${match[2]}`
+      const n = parseFloat(val)
+      if (!isNaN(n) && n > 0 && n < 1) {
+        const totalMin = Math.round(n * 24 * 60)
+        const h = Math.floor(totalMin / 60)
+        const m = totalMin % 60
+        return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
+      }
+      return null
+    }
+
+    const parseNome = (val) => {
+      if (!val) return ''
+      return String(val).replace(/\d{1,2}\/\d{1,2}\/\d{4}/, '').trim()
+    }
+
+    const isX = (val) => String(val).toUpperCase().trim() === 'X'
+
+    const records = []
+    for (let i = headerIdx + 1; i < rows.length; i++) {
+      const r = rows[i]
+      const nominativo = iNominativo >= 0 ? String(r[iNominativo] || '').trim() : ''
+      if (!nominativo) continue
+
+      const nome = parseNome(nominativo)
+      if (!nome || nome.length < 2) continue
+
+      records.push({
+        sessione_id: sessione.id,
+        nome,
+        orario_appuntamento: iOra >= 0 ? parseOra(r[iOra]) : null,
+        azienda: iAzienda >= 0 ? String(r[iAzienda] || '').trim() : null,
+        sesso: iSesso >= 0 ? String(r[iSesso] || '').trim() : null,
+        codice_fiscale: iCF >= 0 ? String(r[iCF] || '').trim() : null,
+        mansione: iMansione >= 0 ? String(r[iMansione] || '').trim() : null,
+        tipo_visita: iVisita >= 0 ? String(r[iVisita] || '').trim() : null,
+        necessita_ecg: iEcg >= 0 ? isX(r[iEcg]) : false,
+        necessita_prelievo: iEsami >= 0 ? !!String(r[iEsami] || '').trim() : false,
+        esami_sangue: iEsami >= 0 ? String(r[iEsami] || '').trim() || null : null,
+        necessita_audio: iAudio >= 0 ? isX(r[iAudio]) : false,
+        necessita_spiro: iSpiro >= 0 ? isX(r[iSpiro]) : false,
+        necessita_vesti: iVesti >= 0 ? isX(r[iVesti]) : false,
+        necessita_erg: iErg >= 0 ? isX(r[iErg]) : false,
+        necessita_etil: iEtil >= 0 ? isX(r[iEtil]) : false,
+        necessita_td: iTd >= 0 ? isX(r[iTd]) : false,
+        note_varie: iVarie >= 0 ? String(r[iVarie] || '').trim() || null : null,
+        stato: 'non_arrivato',
+        arrivato: false
+      })
+    }
+
+    if (records.length === 0) {
+      alert('Nessun paziente trovato nel foglio selezionato')
+      return
+    }
+
+    const { error } = await supabase.from('pazienti_attesa').insert(records)
+    if (error) alert('Errore importazione: ' + error.message)
+    e.target.value = ''
   }
 
   const importaPDF = async (e) => {
