@@ -143,6 +143,27 @@ export default function Studio() {
     if (p.stato === 'pronto') badges.push(
       <span key="pronto" style={{ background: '#d4edda', color: '#155724', padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700 }}>✅ Pronto</span>
     )
+    if (p.necessita_audio) badges.push(
+      <span key="audio" style={{ background: '#dbeafe', color: '#1e40af', padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700 }}>🎧 Audio</span>
+    )
+    if (p.necessita_spiro) badges.push(
+      <span key="spiro" style={{ background: '#fce7f3', color: '#9d174d', padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700 }}>💨 Spiro</span>
+    )
+    if (p.necessita_vesti) badges.push(
+      <span key="vesti" style={{ background: '#ede9fe', color: '#5b21b6', padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700 }}>👗 Vesti</span>
+    )
+    if (p.necessita_erg) badges.push(
+      <span key="erg" style={{ background: '#fef3c7', color: '#92400e', padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700 }}>🏋️ Erg</span>
+    )
+    if (p.necessita_etil) badges.push(
+      <span key="etil" style={{ background: '#fee2e2', color: '#991b1b', padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700 }}>🍷 Etil</span>
+    )
+    if (p.necessita_td) badges.push(
+      <span key="td" style={{ background: '#d1fae5', color: '#065f46', padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700 }}>💉 TD</span>
+    )
+    if (p.necessita_prelievo && p.esami_sangue) badges.push(
+      <span key="esami" style={{ background: '#f8d7da', color: '#721c24', padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 700, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>🩸 {p.esami_sangue}</span>
+    )
     return badges
   }
 
@@ -275,6 +296,14 @@ export default function Studio() {
               </div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {getBadge(p)}
+              </div>
+              <div style={{ fontSize: 12, color: '#888', marginTop: 4, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {p.azienda && <span>🏢 {p.azienda}</span>}
+                {p.mansione && <span>👷 {p.mansione}</span>}
+                {p.tipo_visita && <span>📋 {p.tipo_visita}</span>}
+                {p.orario_appuntamento && <span>🕐 Prenotato: {p.orario_appuntamento}</span>}
+                {p.timestamp_arrivo && <span>✅ Arrivato: {new Date(p.timestamp_arrivo).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</span>}
+                {p.note_varie && <span style={{ color: '#d97706' }}>📝 {p.note_varie}</span>}
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
