@@ -107,6 +107,7 @@ export default function Segreteria() {
       .from('pazienti_attesa')
       .delete()
       .eq('sessione_id', sessione.id)
+    caricaPazienti(sessione)
   }
 
   const importaExcel = async (e) => {
@@ -232,6 +233,7 @@ export default function Segreteria() {
 
     const { error } = await supabase.from('pazienti_attesa').insert(records)
     if (error) alert('Errore importazione: ' + error.message)
+    if (!error) caricaPazienti(sessione)
     e.target.value = ''
   }
 
