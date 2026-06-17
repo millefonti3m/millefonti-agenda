@@ -458,10 +458,21 @@ export default function Segreteria() {
               {/* Info */}
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, fontSize: 16 }}>{p.nome}</div>
-                <div style={{ fontSize: 13, color: '#888' }}>
+                <div style={{ fontSize: 13, color: '#888', marginBottom: 2 }}>
                   {p.orario_appuntamento || '—'}
-                  {p.necessita_ecg && ' · ⚡ ECG'}
-                  {p.necessita_prelievo && ' · 🩸 Prelievo'}
+                  {p.azienda && ` · 🏢 ${p.azienda}`}
+                  {p.mansione && ` · 👷 ${p.mansione}`}
+                </div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {p.necessita_ecg && <span style={{ background: '#fff3cd', color: '#856404', padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700 }}>⚡ ECG</span>}
+                  {p.necessita_prelievo && <span style={{ background: '#f8d7da', color: '#721c24', padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700 }}>🩸 Prelievo</span>}
+                  {p.necessita_audio && <span style={{ background: '#dbeafe', color: '#1e40af', padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700 }}>🎧 Audio</span>}
+                  {p.necessita_spiro && <span style={{ background: '#fce7f3', color: '#9d174d', padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700 }}>💨 Spiro</span>}
+                  {p.necessita_vesti && <span style={{ background: '#ede9fe', color: '#5b21b6', padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700 }}>👗 Vesti</span>}
+                  {p.necessita_erg && <span style={{ background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700 }}>🏋️ Erg</span>}
+                  {p.necessita_etil && <span style={{ background: '#fee2e2', color: '#991b1b', padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700 }}>🍷 Etil</span>}
+                  {p.necessita_td && <span style={{ background: '#d1fae5', color: '#065f46', padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700 }}>💉 TD</span>}
+                  {p.note_varie && <span style={{ background: '#fef9c3', color: '#713f12', padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700 }}>📝 {p.note_varie}</span>}
                 </div>
               </div>
 
