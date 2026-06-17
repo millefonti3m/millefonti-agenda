@@ -35,7 +35,7 @@ export default function Display() {
       .from('pazienti_attesa')
       .select('numero_progressivo, studio_assegnato')
       .eq('sessione_id', sess.id)
-      .eq('stato', 'in_visita')
+      .in('stato', ['in_visita', 'in_infermeria'])
       .order('studio_assegnato')
     if (data) setInVisita(data)
   }
@@ -226,7 +226,7 @@ export default function Display() {
               fontWeight: 700,
               border: '2px solid #2d7d6f'
             }}>
-              N° {p.numero_progressivo} → Studio {p.studio_assegnato}
+              N° {p.numero_progressivo} → {p.stato === 'in_infermeria' ? 'Infermeria' : `Studio ${p.studio_assegnato}`}
             </div>
           ))}
         </div>
