@@ -58,8 +58,21 @@ export default function Display() {
         caricaInVisita()
       })
       .subscribe()
-    return () => supabase.removeChannel(sub)
-  }, [])
+
+  const subPazienti = supabase
+    .channel('display_pazienti')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'pazienti_attesa'
+    }, () => caricaInVisita())
+    .subscribe()
+
+  return () => {
+    supabase.removeChannel(sub)
+    supabase.removeChannel(subPazienti)
+  }
+}, [])
 
   return (
     <div style={{
