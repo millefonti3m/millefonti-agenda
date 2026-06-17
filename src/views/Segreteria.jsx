@@ -37,7 +37,7 @@ export default function Segreteria() {
       .from('sessioni_attesa')
       .select('id')
       .eq('data', dataStr)
-      .single()
+      .maybeSingle()
     if (!data) {
       const { data: nuova } = await supabase
         .from('sessioni_attesa')
