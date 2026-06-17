@@ -77,6 +77,7 @@ export default function Segreteria() {
       .eq('id', paziente.id)
       .select()
       .single()
+    caricaPazienti(sessione)
     setContatore(c => c + 1)
   }
 
