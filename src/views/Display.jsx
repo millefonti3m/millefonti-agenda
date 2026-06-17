@@ -10,6 +10,7 @@ const FONT_BODY = "'Plus Jakarta Sans', Arial, sans-serif"
 export default function Display() {
   const [chiamata, setChiamata] = useState(null)
   const [inVisita, setInVisita] = useState([])
+  const [audioAttivo, setAudioAttivo] = useState(false)
 
   const caricaUltima = async () => {
     const { data } = await supabase
@@ -71,6 +72,42 @@ export default function Display() {
       fontFamily: FONT_BODY,
       padding: 40
     }}>
+      {/* Overlay attivazione audio */}
+      {!audioAttivo && (
+        <div
+          onClick={() => {
+            setAudioAttivo(true)
+            const u = new SpeechSynthesisUtterance('Sistema attivo')
+            u.lang = 'it-IT'
+            u.volume = 0
+            window.speechSynthesis.speak(u)
+          }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(37,87,54,0.95)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            cursor: 'pointer'
+          }}
+        >
+          <img src="/logo_transparent.png"
+            style={{ height: 160, marginBottom: 32 }} />
+          <div style={{
+            color: 'white', fontSize: 28,
+            fontWeight: 700, marginBottom: 16
+          }}>
+            Tocca per avviare il display
+          </div>
+          <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16 }}>
+            Necessario per attivare gli annunci vocali
+          </div>
+        </div>
+      )}
+
       {/* Logo */}
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
         <img
