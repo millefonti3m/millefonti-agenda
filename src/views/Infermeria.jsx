@@ -205,10 +205,16 @@ export default function Infermeria() {
           <div style={{ fontSize: 48, fontWeight: 900, color: '#1a1a1a', marginBottom: 8 }}>
             N° {pazienteAttuale.numero_progressivo}
           </div>
-          <div style={{ fontSize: 22, color: '#333', marginBottom: 24 }}>
+          <div style={{ fontSize: 22, color: '#333', marginBottom: 8 }}>
             {pazienteAttuale.nome}
           </div>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 8 }}>
+          {pazienteAttuale.azienda && (
+            <div style={{ fontSize: 14, color: '#888', marginTop: 4, marginBottom: 16 }}>
+              🏢 {pazienteAttuale.azienda}
+              {pazienteAttuale.mansione && ` · 👷 ${pazienteAttuale.mansione}`}
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
             {pazienteAttuale.necessita_ecg && (
               <span style={{
                 background: '#fff3cd',
@@ -229,7 +235,42 @@ export default function Infermeria() {
                 fontSize: 14
               }}>🩸 Prelievo</span>
             )}
+            {pazienteAttuale.necessita_audio && (
+              <span style={{ background: '#dbeafe', color: '#1e40af', padding: '6px 16px', borderRadius: 20, fontWeight: 700, fontSize: 14 }}>🎧 Audiometria</span>
+            )}
+            {pazienteAttuale.necessita_spiro && (
+              <span style={{ background: '#fce7f3', color: '#9d174d', padding: '6px 16px', borderRadius: 20, fontWeight: 700, fontSize: 14 }}>💨 Spirometria</span>
+            )}
+            {pazienteAttuale.necessita_vesti && (
+              <span style={{ background: '#ede9fe', color: '#5b21b6', padding: '6px 16px', borderRadius: 20, fontWeight: 700, fontSize: 14 }}>👗 Vestibolare</span>
+            )}
+            {pazienteAttuale.necessita_erg && (
+              <span style={{ background: '#fef3c7', color: '#92400e', padding: '6px 16px', borderRadius: 20, fontWeight: 700, fontSize: 14 }}>🏋️ Ergometria</span>
+            )}
+            {pazienteAttuale.necessita_etil && (
+              <span style={{ background: '#fee2e2', color: '#991b1b', padding: '6px 16px', borderRadius: 20, fontWeight: 700, fontSize: 14 }}>🍷 Etilometro</span>
+            )}
+            {pazienteAttuale.necessita_td && (
+              <span style={{ background: '#d1fae5', color: '#065f46', padding: '6px 16px', borderRadius: 20, fontWeight: 700, fontSize: 14 }}>💉 Test TD</span>
+            )}
           </div>
+          {pazienteAttuale.esami_sangue && (
+            <div style={{
+              background: '#fff3cd',
+              border: '1px solid #ffc107',
+              borderRadius: 10,
+              padding: '10px 16px',
+              marginTop: 12,
+              fontSize: 13,
+              color: '#333',
+              textAlign: 'left'
+            }}>
+              <div style={{ fontWeight: 700, marginBottom: 4, color: '#856404' }}>
+                🩸 Esami del sangue:
+              </div>
+              {pazienteAttuale.esami_sangue}
+            </div>
+          )}
         </div>
       ) : (
         <div style={{
