@@ -69,6 +69,23 @@ export default function Studio() {
 
   const chiamaPaziente = async (paziente) => {
     setLoading(true)
+
+    // Completa automaticamente il paziente in visita
+    const { data: inVisita } = await supabase
+      .from('pazienti_attesa')
+      .select('id')
+      .eq('sessione_id', sessione.id)
+      .eq('stato', 'in_visita')
+      .eq('studio_assegnato', parseInt(numero))
+      .maybeSingle()
+
+    if (inVisita) {
+      await supabase
+        .from('pazienti_attesa')
+        .update({ stato: 'completato' })
+        .eq('id', inVisita.id)
+    }
+
     await supabase
       .from('pazienti_attesa')
       .update({
