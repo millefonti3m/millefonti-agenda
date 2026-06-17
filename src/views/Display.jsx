@@ -9,22 +9,39 @@ const FONT_BODY = "'Plus Jakarta Sans', Arial, sans-serif"
 
 export default function Display() {
   const [chiamata, setChiamata] = useState(null)
-  const [storico, setStorico] = useState([])
+  const [inVisita, setInVisita] = useState([])
 
   const caricaUltima = async () => {
     const { data } = await supabase
       .from('chiamate_display')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(4)
+      .limit(1)
     if (data?.length) {
       setChiamata(data[0])
-      setStorico(data.slice(1))
     }
+  }
+
+  const caricaInVisita = async () => {
+    const oggi = new Date().toISOString().split('T')[0]
+    const { data: sess } = await supabase
+      .from('sessioni_attesa')
+      .select('id')
+      .eq('data', oggi)
+      .maybeSingle()
+    if (!sess) return
+    const { data } = await supabase
+      .from('pazienti_attesa')
+      .select('numero_progressivo, studio_assegnato')
+      .eq('sessione_id', sess.id)
+      .eq('stato', 'in_visita')
+      .order('studio_assegnato')
+    if (data) setInVisita(data)
   }
 
   useEffect(() => {
     caricaUltima()
+    caricaInVisita()
     const sub = supabase
       .channel('display')
       .on('postgres_changes', {
@@ -33,11 +50,11 @@ export default function Display() {
         table: 'chiamate_display'
       }, (payload) => {
         setChiamata(payload.new)
-        setStorico(prev => [payload.new, ...prev].slice(0, 3))
         const utterance = new SpeechSynthesisUtterance(payload.new.testo_voce)
         utterance.lang = 'it-IT'
         utterance.rate = 0.9
         window.speechSynthesis.speak(utterance)
+        caricaInVisita()
       })
       .subscribe()
     return () => supabase.removeChannel(sub)
@@ -141,26 +158,25 @@ export default function Display() {
         </div>
       )}
 
-      {/* Storico ultimi 3 */}
-      {storico.length > 0 && (
+      {/* Pazienti in visita per studio */}
+      {inVisita.length > 0 && (
         <div style={{
           position: 'fixed',
           bottom: 40,
           display: 'flex',
           gap: 20
         }}>
-          {storico.map((s) => (
-            <div key={s.id} style={{
+          {inVisita.map(p => (
+            <div key={p.numero_progressivo} style={{
               background: '#f0f5f0',
-              border: `1px solid ${VERDE_MEDIO}`,
               borderRadius: 12,
-              padding: '12px 28px',
-              color: TEAL,
-              fontSize: 17,
-              fontFamily: FONT_BODY,
-              fontWeight: 600
+              padding: '10px 24px',
+              color: '#255736',
+              fontSize: 18,
+              fontWeight: 700,
+              border: '2px solid #2d7d6f'
             }}>
-              {s.numero_paziente === 0 ? `📢 ${s.testo_voce}` : `N° ${s.numero_paziente} → ${s.destinazione}`}
+              N° {p.numero_progressivo} → Studio {p.studio_assegnato}
             </div>
           ))}
         </div>
